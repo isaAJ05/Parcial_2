@@ -19,12 +19,8 @@ prefacio? Por ejemplo, en un prefacio de cinco páginas usaremos los números ro
 
 # Función para convertir números a romanos
 def int_to_roman(num):
-    val = [
-        100, 90, 50, 40, 10, 9, 5, 4, 1
-        ]
-    syb = [
-        "C", "XC", "L", "XL", "X", "IX", "V", "IV", "I"
-        ]
+    val = [100, 90, 50, 40, 10, 9, 5, 4, 1]
+    syb = ["C", "XC", "L", "XL", "X", "IX", "V", "IV", "I"]
     roman_num = ''
     i = 0
     while  num > 0:
