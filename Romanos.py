@@ -47,10 +47,18 @@ def count_roman_characters(max_page):
     
     return counts
 
-n, result=1,{}
+n, result=1,{} #diccionario de clave (n) : (Resultados de la cuenta de cada uno (tambien es un diccionario))
 while(n!=0):
     n=int(input("Digite n: "))
     if(n>0):
-        result[n]=count_roman_characters(n)
+        result[n]=count_roman_characters(n) #va agregando al diccionario 
 
+print('\n Resultados: \n')
+#Mostrar resultados de forma aceptable (como lo dice la instruccion)
+for c,v in result.items():
+    #print(f' {c} : {v}')
+    g=''
+    for letra,d in v.items():
+       g+=f' {d}  {letra} , '
+    print(f' {c} :  {g}')
         
