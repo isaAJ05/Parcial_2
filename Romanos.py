@@ -47,7 +47,10 @@ def count_roman_characters(max_page):
     
     return counts
 
-# Ejemplo: contar caracteres para un prefacio de 100 páginas
-max_page = 5
-result = count_roman_characters(max_page)
-print(result)
+n, result=1,{}
+while(n!=0):
+    n=int(input("Digite n: "))
+    if(n>0):
+        result[n]=count_roman_characters(n)
+
+        
