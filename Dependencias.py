@@ -1,84 +1,85 @@
 print("DEPENDENCIAS DEL SISTEMA")
 
 nombres_comandos = ['DEPEND', 'INSTALL', 'REMOVE', 'LIST', 'END']
-dependencias = {}
-instaladas = []
+dict_dependencias = {}
+list_instaladas = []
 
-'''
-ya funciona :D
-[VALIDACIONES POR HACER]
-comando: 80 char max
-elementos: 10 char max
-distinguir may y min
-
-- y falta comentar tambien :p
-'''
-def identificar_comando(comando, elementos):
-    if comando in nombres_comandos:
+def identificar_comando(comando, elementos): # identifica el comando y llama a la función correspondiente
+    if comando in nombres_comandos and comando.isupper(): # si el comando está en la lista y es mayúscula
         match comando:
             case 'DEPEND':
-                print(depend(elementos))
+                depend(elementos)
             case 'INSTALL':
                 elemento = elementos[0]
-                if elemento in instaladas:
-                    print(f"{elemento} ya está instalado")
+                if elemento in list_instaladas: 
+                    print(f"    {elemento} ya está instalado.") # no reinstalar si ya estaba
                 else:
-                    install(elemento)
+                    install(elemento) # si no estaba instalado, instalar
             case 'REMOVE':
                 elemento = elementos[0]
-                if eliminable_tf(elemento): 
-                    instaladas.remove(elemento)
-                    print(f"Eliminando {elemento}")
-                    if elemento in dependencias: 
-                        dependencias_a_eliminar = dependencias[elemento][:]
-                        for dep in dependencias_a_eliminar:
-                            eliminar_dependencia(dep)
+                if eliminable(elemento): # si se puede eliminar, hacerlo
+                    list_instaladas.remove(elemento)
+                    print(f"    Eliminando {elemento}...")
+                    if elemento in dict_dependencias: # eliminar dependencias si es posible hacerlo
+                        dependencias_a_eliminar = dict_dependencias[elemento][:]
+                        for dependencia in dependencias_a_eliminar:
+                            eliminar_dependencia(dependencia)
             case 'LIST':
-                print(instaladas)
-                return 
+                print(list_instaladas) # mostrar lista de elementos instalados
             case 'END':
-                exit()
+                exit() # salir del programa
     else:
-        print("(!) Inválido.")  
+        print("(!) Nombre de comando no válido.")  
 
 
 def depend(elementos): # crea un diccionario con las dependencias
-    dependencias[elementos.pop(0)] = elementos
-    return dependencias
+    dict_dependencias[elementos.pop(0)] = elementos
+    return dict_dependencias
 
-def install(elemento):
-    if elemento not in instaladas:
-        if elemento in dependencias:
-            for dep in dependencias[elemento]:
-                install(dep)
-        instaladas.append(elemento)
-        print(f"Instalando {elemento}")
+def install(elemento): # instala un elemento y sus dependencias
+    if elemento not in list_instaladas:
+        if elemento in dict_dependencias:
+            for dependencia in dict_dependencias[elemento]:
+                install(dependencia)
+        list_instaladas.append(elemento)
+        print(f"    Instalando {elemento}...")
 
-def eliminable_tf(elemento):
-    if elemento in instaladas:
-        for deps in dependencias.values():
-            if elemento in deps: # si hay elementos que dependen de él
-                for dependiente, dependencias_dep in dependencias.items():
-                    if elemento in dependencias_dep and dependiente in instaladas: # si hay elementos que dependen de él y están instalados
-                        print(f"{elemento} aún se necesita")
+def eliminable(elemento): # verifica si un elemento se puede eliminar
+    if elemento in list_instaladas:
+        for dep in dict_dependencias.values():
+            if elemento in dep: # si hay elementos que dependen de él
+                for dependiente, dependencias in dict_dependencias.items():
+                    if elemento in dependencias and dependiente in list_instaladas: # si hay elementos que dependen de él y están instalados
+                        print(f"    {elemento} aún se necesita.")
                         return False  # no se puede eliminar     
-        return True  # si el elemento no tiene dependencias, se puede eliminar
+        return True  # si no hay elementos que dependan de él, se puede eliminar
     else:
-        print(f"{elemento} no está instalado")
+        print(f"    {elemento} no está instalado.")
         return False  # si no está instalado, no se puede eliminar
    
-def eliminar_dependencia(dependencia):
+def eliminar_dependencia(dependencia): # elimina implícitamente las dependencias si es posible
     i=0
-    for dependiente, dependencias_dep in dependencias.items():
-        if dependencia in dependencias_dep and dependiente in instaladas:
-            i+=1
+    for dependiente, dependencias in dict_dependencias.items():
+        if dependencia in dependencias and dependiente in list_instaladas:
+            i+=1 # no se puede eliminar la dependencia si hay otros elementos que tambien dependan de ella
     if i==0:
-        instaladas.remove(dependencia)
-        print(f"Eliminando {dependencia}")
+        list_instaladas.remove(dependencia)
+        print(f"    Eliminando {dependencia}...")
            
-
-while True:
-    f=input('-> ')
-    c=f.split()
-    identificar_comando(c.pop(0),c)
+while True: # main
+    comando_ln=input('-> ')
+    if len(comando_ln)>80: # validación de 80 carácteres máximo por comando
+        print("(!) Comando muy largo.")
+    else:
+        c=comando_ln.split() # separar por espacios
+        elemento_valido=True
+        for elemento in c:
+            if len(elemento)>10: # validación de 10 carácteres máximo por elemento
+                print("(!) Elemento muy largo.")
+                elemento_valido=False
+                break
+        if elemento_valido:
+            identificar_comando(c.pop(0),c)
+                
+    
     
